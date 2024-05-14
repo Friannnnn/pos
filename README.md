@@ -3,14 +3,14 @@
 # LANGUAGES USED - PHP(BOOTSTRAP 5.3), AJAX(for realtime update), Figma(UI), dbdiag(DB Design)
 
 # Done
--Login 
--Logout
--Session
+- Login 
+- Logout
+- Session
 
 # Update asap
--shift time add in php
--gutter in sidebar
--have a limit on shift timne (8am to 10pm only)
+- shift time add in php
+- gutter in sidebar
+- have a limit on shift timne (8am to 10pm only)
 
 # To be added UI/UX
 - Dashboard layout (Admin) no dash for cashiers
