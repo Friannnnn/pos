@@ -150,14 +150,14 @@ if (isset($_POST['logout'])) {
                             <!-- one sidebar -->
                             
                             <!-- change dashboard depending if admin-->
-                            <!-- -->
+                            <!--  May 14 11:56 put cashier report inside cashiers table with admin only previlage-->
                         </li>
                         <li class="nav-item">
                             <a class="nav-link linkcol" href="#">Dashboard</a>
                         </li>
                         <li class="nav-item dropdown">
                             
-                            <div class="profile dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown">
+                            <div class="nav-link profile dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown">
                                 <small ><?php echo $_SESSION['cashierCode']; ?></small>
                             </div> 
                             <ul class="dropdown-menu" aria-labelledby="profileDropdown">
@@ -180,11 +180,22 @@ if (isset($_POST['logout'])) {
     
 
     <div class="container-fluid main-content">
-        <div class="row">
+        <!-- category and sort buttons nav -->
+        <div class="row"> 
+            <!--  
             <div class="col-md-12"> 
-                <a id="welcomeNote" > Hello, I'm <?php  echo $_SESSION['cashierName']; ?>!</a>
+            <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Category
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Action</a></li>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li><a class="dropdown-item" href="#">Something else here</a></li>
+            </ul>
             </div>
-                
+            </div>
+            -->
         </div>
     </div>
 

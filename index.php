@@ -8,7 +8,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['register'])) {
         $lastName = $_POST['lastName'];
         $email = $_POST['email'];
         $password = $_POST['password'];
-
+        $shift_start = $_POST['shift-start'];
+        $shift_end = $_POST['shift-end'];
+        
         $codeLength = 8;
         $charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         $generatedCode = "";
@@ -16,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['register'])) {
             $generatedCode .= $charset[rand(0, strlen($charset) - 1)];
         }
 
-        $sql = "INSERT INTO cashiers (first_name, last_name, email, password, generated_code) VALUES ('$firstName', '$lastName', '$email', '$password', '$generatedCode')";
+        $sql = "INSERT INTO cashiers (first_name, last_name, email, password, generated_code,shift_start,shift_end) VALUES ('$firstName', '$lastName', '$email', '$password', '$generatedCode','$shift_start','$shift_end')";
         $conn->query($sql);
         
         $_SESSION['cashierName'] = $firstName . " " . $lastName;
@@ -224,9 +226,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
               <input type="password" class="form-control" id="password" name="password" required>
               <label class="form-label" for="password">Password</label>
             </div> <br>
-            <div class=" position-relative">
-              <input type="time" id="start" name="shift" >
-              <input type="time" id="start" name="shift" >
+            <div class="position-relative">
+              <input type="time" id="start" name="shift-start" required>
+              <input type="time" id="start" name="shift-end" required>
               <label for="shift" class="form-label">Shift (Start - End)</label> 
             </div> <br>
             <button type="submit" class="btn btn-primary w-100" name="register" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#cashierCodeModal">Register</button>
