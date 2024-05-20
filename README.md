@@ -23,6 +23,6 @@
 # Reports to be added
 -terminal report on every start and end shift
 
-May 13 22:38 -- Making figma wireframe for dash ui
-may 20 13:33 -- Making terminal id and terminal modal and terminal report for every login
+- May 13 22:38 -- Making figma wireframe for dash ui
+- may 20 13:33 -- Making terminal id and terminal modal and terminal report for every login
 
