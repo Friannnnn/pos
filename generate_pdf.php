@@ -1,15 +1,6 @@
 <?php
 require('fpdf.php');
 
-class PDF extends FPDF {
-    // Page header
-    function Header() {
-        $this->SetFont('Arial','B',15);
-        $this->Cell(0,10,'Terminal Report',0,1,'C');
-        $this->Ln(10);
-    }
-}
-
 // Create PDF
 $pdf = new PDF();
 $pdf->AddPage();
