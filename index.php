@@ -48,7 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
             $_SESSION['cashierCode'] = $cashierCode;
 
             header("Location: dashboard.php");
-            exit();
+             exit();
         } else {
             echo "<script>alert('Cashier code or password is incorrect. Please try again.');</script>";
         }
@@ -97,9 +97,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
       max-width: 400px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
       align-self: center;
-    }
-    #register {
-      text-decoration: none;
     }
     .btn-primary {
       background-color: #CD853F;
@@ -178,9 +175,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
 
   <div class="brand">
     <span class="brand-icon"><i class="bi bi-shop"></i></span>
-    <span class="brand-name">OverDose Coffeebar</span>
+    <span class="brand-name">Blend 'n Sip Coffeebar</span>
   </div><br>
-  <br>
+  
+
   <div class="login-container">
     <h1 class="text-center mb-4">Welcome!</h1>  <br>
     <form class="mb-3" method="post">
@@ -194,50 +192,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
       </div>
       <button type="submit"  class="btn btn-primary w-100" name="login">Login</button>
     </form>
-    <hr>
-    <p class="mb-0">Haven't registered yet? <a id="register" href="#" data-bs-toggle="modal" data-bs-target="#registerModal">Register Now</a></p>
   </div>
-
-  <!-- new registration add shift time -->
-
-
-  <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="registerModalLabel">Register</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form class="mb-3" method="post">
-            <div class="mb-3 position-relative"> <br>
-              <input type="text" class="w-30 form-control" id="firstName" name="firstName" required>
-              <label class="form-label" for="firstName" >First Name</label>
-            </div> <br>
-            <div class="mb-3 position-relative">
-              <input type="text" class="w-30 form-control" id="lastName" name="lastName" required>
-              <label class="form-label" for="lastName">Last Name</label>
-            </div> <br>
-            <div class="mb-3 position-relative">
-              <input type="email" class="form-control" id="email" name="email" required>
-              <label class="form-label" for="email">Email</label>
-            </div> <br>
-            <div class="mb-3 position-relative">
-              <input type="password" class="form-control" id="password" name="password" required>
-              <label class="form-label" for="password">Password</label>
-            </div> <br>
-            <div class="position-relative">
-              <input type="time" id="start" name="shift-start" required>
-              <input type="time" id="start" name="shift-end" required>
-              <label for="shift" class="form-label">Shift (Start - End)</label> 
-            </div> <br>
-            <button type="submit" class="btn btn-primary w-100" name="register" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#cashierCodeModal">Register</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>

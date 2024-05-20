@@ -1,19 +1,22 @@
 <?php
 session_start();
 
+$_SESSION['cashier_termireport'] = FALSE;
+
 if (!isset($_SESSION['cashierName']) || !isset($_SESSION['cashierCode'])) {
     header("Location: index.php");
     exit();
 }
-    /* 
-    if ($_SESSION['cashierCode'] == 'admin') {
-        echo "admin is here";
-    }
-    */
+
 if (isset($_POST['logout'])) {
     session_destroy();
     header("Location: index.php");
     exit();
+}
+
+// Check if the terminal report has been generated
+if (!isset($_SESSION['terminal_report_generated'])) {
+    $_SESSION['terminal_report_generated'] = false;
 }
 ?>
 
@@ -26,67 +29,60 @@ if (isset($_POST['logout'])) {
     <title>Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-       
         body {
-            display: absolute;
+            display: flex;
             min-height: 100vh;
             flex-direction: column;
-            background-color: #F5F4F2; 
-            color: black; 
-            transition: margin-left 0.3s ease; 
+            background-color: #F5F4F2;
+            color: black;
         }
 
         .container-fluid {
             position: relative;
-            right:7px;
         }
-
 
         .sidebar {
             height: 100%;
             width: 200px;
             position: fixed;
             top: 0;
+            left: 0;
             background-color: #EEECDA;
             padding-top: 1rem;
-            transition: 0.3s ; 
-        }  
+        }
 
         .nav-link {
             color: black;
             padding: 12px;
-            border-radius:5px;
-        }
-
-        .nav-link:hover {
-            color: black;
             border-radius: 5px;
-            background-color: #d2a56c;
+            text-decoration: none;
         }
 
+        .nav-link:hover,
         .nav-link:focus {
             color: black;
-            border-radius: 5px;
             background-color: #d2a56c;
         }
 
         .main-content {
-            margin-left: 0; 
+            margin-left: 210px; /* Adjusted to fit sidebar */
             padding: 20px;
             flex: 1;
-            color: #fff; 
+            color: #000;
+            max-width: 800px; /* Center the content */
+            margin: 0 auto; /* Center the content */
         }
 
         .profile {
             padding: 10px;
             cursor: pointer;
-            position: relative;
-            top:420px;
+            position: absolute;
+            bottom: 20px;
         }
 
         .profile:hover {
-            border-radu
             background-color: #D2AC67;
         }
 
@@ -100,13 +96,13 @@ if (isset($_POST['logout'])) {
 
         .dropdown-item:hover {
             background-color: #8B4513 !important;
-        }        
+        }
 
         #welcomeNote {
             position: absolute;
             color: black;
-            top: 20px; 
-            right: 50px; 
+            top: 20px;
+            right: 50px;
         }
 
         .linkcol {
@@ -114,105 +110,166 @@ if (isset($_POST['logout'])) {
             top: 150px;
         }
 
-        
+        .category-btn {
+            color: black;
+            border-radius:5px;
+            border: none;
+            background: none;
+            padding: 12px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .category-btn:hover, .category-btn:focus {
+            color: black;
+            background-color: #d2a56c;
+            text-decoration: none;
+            border-radius:5px;
+        }
+
+        .disabled-link {
+            pointer-events: none;
+            color: grey;
+        }
+
+        .search-bar {
+            width: 300px; /* Adjust width as needed */
+            margin-right: 20px;
+        }
     </style>
 </head>
 
 <body>
-    
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-4">
-
                 <div class="sidebar">
-                    <div class="row ">
-                        <div class="col">
-                            <div class="container-fluid ">
-                                <span class="brand-icon"><i class="bi bi-shop"></i></span>
-                                <span class="brand-name">OverDose</span>
-                            </div>
-                        </div>
+                    <div class="container-fluid">
+                        <span class="brand-icon"><i class="bi bi-shop"></i></span>
+                        <span class="brand-name">OverDose</span>
                     </div>
 
                     <ul class="nav flex-column">
-                        
                         <br> <br>
-                        <li class="nav-item">  
-                            
-                            <a class="nav-link linkcol" href="#">Home</a>
-                            
-                            <!-- kada new session prompt ng terminal report -->
-                            <!-- no terminal report no transac -->
-                            
-                            <!-- keep color palette -->
-
-                            <!-- gutter for main content-->
-                            <!-- one sidebar -->
-                            
-                            <!-- change dashboard depending if admin-->
-                            <!--  May 14 11:56 put cashier report inside cashiers table with admin only previlage-->
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link linkcol" href="#">Dashboard</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            
-                            <div class="nav-link profile dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown">
-                                <small ><?php echo $_SESSION['cashierCode']; ?></small>
-                            </div> 
-                            <ul class="dropdown-menu" aria-labelledby="profileDropdown">
-                                <?php 
-                                    if ($_SESSION['cashierCode'] == 'admin') {
-                                        echo '<a class="dropdown-item" id="cashier" href="#" data-bs-toggle="modal" data-bs-target="#cashierModal">Cashiers</a>';
-                                    }
+                        <?php
+                            if ($_SESSION['cashierCode'] == 'admin') {
+                                echo '
+                                <li class="nav-item">  
+                                    <a class="nav-link linkcol" href="#">Cashiers</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link linkcol" href="#">Dashboard</a>
+                                </li>';
+                            } else {
+                                echo '
+                                <li class="nav-item">  
+                                    <a class="nav-link linkcol" href="terminal_report.php">Terminal Report</a>
+                                </li>
+                                <li class="nav-item">  
+                                    <a class="nav-link linkcol main-content-load" href="#" '.($_SESSION['terminal_report_generated']? '' : 'class="disabled-link"').'>Home</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link linkcol main-content-load" href="#" '.($_SESSION['terminal_report_generated'] ? '' : 'class="disabled-link"').'>Sales</a>
+                                    </li>';
+                                }
+                            ?>
+                            <li class="nav-item dropdown">
+                                <div class="nav-link profile dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown">
+                                    <small><?php echo $_SESSION['cashierCode']; ?></small>
+                                </div>
+                                <ul class="dropdown-menu" aria-labelledby="profileDropdown">
+                                    <?php 
+                                        if ($_SESSION['cashierCode'] == 'admin') {
+                                            echo '<a class="dropdown-item" id="cashier" href="#" data-bs-toggle="modal" data-bs-target="#cashierModal">Cashiers</a>';
+                                        }
                                     ?>
-                                <li><form method="post"><button class="dropdown-item" type="submit" name="logout">Logout</button></form></li>
-                            </ul>
-                        </li>
-                    </ul>
+                                    <li><form method="post"><button class="dropdown-item" type="submit" name="logout">Logout</button></form></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-
-
             </div>
         </div>
-    </div>
-
     
-
-    <div class="container-fluid main-content">
-        <!-- category and sort buttons nav -->
-        <div class="row"> 
-            <!--  
-            <div class="col-md-12"> 
-            <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Category
-            </button>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
-                <li><a class="dropdown-item" href="#">Something else here</a></li>
-            </ul>
-            </div>
-            </div>
-            -->
+        <div class="container-fluid main-content">
+            <?php
+                if ($_SESSION['cashierCode'] != 'admin' && $_SESSION['terminal_report_generated']) {
+                    echo '
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="dropdown">
+                                    <button class="category-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Category
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="#">Category 1</a></li>
+                                        <li><a class="dropdown-item" href="#">Category 2</a></li>
+                                        <li><a class="dropdown-item" href="#">Category 3</a></li>
+                                    </ul>
+                                </div>
+                                <form class="d-flex">
+                                    <input class="form-control me-2 search-bar" type="search" placeholder="Search" aria-label="Search">
+                                    <button class="btn btn-outline-success" type="submit">Search</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row main-content-container">
+                        <!-- Product Section (Blank) -->
+                    </div>';
+                }
+            ?>
         </div>
-    </div>
-
-
-  <div class="modal fade" id="cashierModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="registerModalLabel">Cashiers Registered</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-                                    
-</body>
-
-</html>
+    
+        <?php
+            if (isset($_SESSION['cashierCode']) && $_SESSION['cashierCode'] == 'admin') {
+                $_SESSION['cashier_termireport'] = TRUE;
+            }
+            else {
+                echo ("<script>
+                window.onload = function() {
+                let text = 'Print a terminal report first!';
+                confirm(text);
+                }
+                </script>");
+                }
+                ?>
+                
+                <div class="modal fade" id="cashierModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="registerModalLabel">Cashiers Registered</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-table">
+                                <!-- 
+                                <table border="1">
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Cashier Name</th>
+                                        <th>Total Sales</th>
+                                    </tr>
+                                </table>
+                                -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    $(document).ready(function() {
+                        // Function to load main content using AJAX
+                        $('.main-content-load').click(function(e) {
+                            e.preventDefault();
+                            var url = $(this).attr('href');
+                            $('.main-content-container').load(url);
+                        });
+                    });
+                </script>
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+                </body>
+                </html>
+    
