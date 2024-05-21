@@ -1,3 +1,12 @@
+<?php
+    session_start();
+
+    if (isset($_POST['done'])) {
+        $_SESSION['terminal_report_generated'] = true;
+        header("Location: dashboard.php");
+    }
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,7 +26,10 @@
     <div class="container">
         <h1>Terminal Report</h1>
         <!-- Print button -->
-        <a id="printBtn" class="btn btn-primary" href="generate_pdf.php" target="_blank">Print</a>
+        <form action="terminal_report.php" method="post">
+            <a id="printBtn" class="btn btn-primary" href="generate_pdf.php" >Print</a>
+            <input class="btn btn-primary" type="submit" name="done" value="Done">
+        </form>
         <hr>
         <!-- Blank section for content -->
         <div id="terminal-report-content">

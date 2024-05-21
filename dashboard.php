@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-$_SESSION['cashier_termireport'] = FALSE;
 
 if (!isset($_SESSION['cashierName']) || !isset($_SESSION['cashierCode'])) {
     header("Location: index.php");
@@ -14,10 +13,17 @@ if (isset($_POST['logout'])) {
     exit();
 }
 
-// Check if the terminal report has been generated
-if (!isset($_SESSION['terminal_report_generated'])) {
-    $_SESSION['terminal_report_generated'] = false;
-}
+    if (!isset($_SESSION['terminal_report_generated']) ) {
+        if ($_SESSION['cashierCode'] == 'admin') {
+            $_SESSION['terminal_report_generated'] = true;
+            echo '<script> console.log("admin")</script>';
+            
+        } else {
+            echo '<script> console.log("cashier")</script>';
+            $_SESSION['terminal_report_generated'] = false;
+        }   
+    }
+
 ?>
 
 <!DOCTYPE html>
@@ -132,6 +138,16 @@ if (!isset($_SESSION['terminal_report_generated'])) {
             color: grey;
         }
 
+        .btn-outline-success:hover {
+            color: white;
+            background-color:#d2a56c;
+            border-color:#d2a56c;
+        }
+        .btn-outline-success {
+            color: #d2a56c;
+            border-color:#d2a56c;
+        }
+
         .search-bar {
             width: 300px; /* Adjust width as needed */
             margin-right: 20px;
@@ -146,7 +162,7 @@ if (!isset($_SESSION['terminal_report_generated'])) {
                 <div class="sidebar">
                     <div class="container-fluid">
                         <span class="brand-icon"><i class="bi bi-shop"></i></span>
-                        <span class="brand-name">OverDose</span>
+                        <span class="brand-name">Blend n' Sip</span>
                     </div>
 
                     <ul class="nav flex-column">
@@ -163,15 +179,26 @@ if (!isset($_SESSION['terminal_report_generated'])) {
                             } else {
                                 echo '
                                 <li class="nav-item">  
-                                    <a class="nav-link linkcol" href="terminal_report.php">Terminal Report</a>
-                                </li>
-                                <li class="nav-item">  
                                     <a class="nav-link linkcol main-content-load" href="#" '.($_SESSION['terminal_report_generated']? '' : 'class="disabled-link"').'>Home</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link linkcol main-content-load" href="#" '.($_SESSION['terminal_report_generated'] ? '' : 'class="disabled-link"').'>Sales</a>
                                     </li>';
                                 }
+
+                            if ($_SESSION['terminal_report_generated'] == false) {
+                                echo '<li class="nav-item">  
+                                    <a class="nav-link linkcol" href="terminal_report.php">Terminal Report</a>
+                                </li>';
+                                
+                                    echo ("<script>
+                                        window.onload = function() {
+                                        let text = 'Print a terminal report first!';
+                                        confirm(text);
+                                        }
+                                        </script>");    
+                                
+                            }
                             ?>
                             <li class="nav-item dropdown">
                                 <div class="nav-link profile dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown">
@@ -194,7 +221,7 @@ if (!isset($_SESSION['terminal_report_generated'])) {
     
         <div class="container-fluid main-content">
             <?php
-                if ($_SESSION['cashierCode'] != 'admin' && $_SESSION['terminal_report_generated']) {
+                if ($_SESSION['cashierCode'] != 'admin' && $_SESSION['terminal_report_generated'] == true) {
                     echo '
                     <div class="row">
                         <div class="col-md-12">
@@ -204,13 +231,13 @@ if (!isset($_SESSION['terminal_report_generated'])) {
                                         Category
                                     </button>
                                     <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="#">Category 1</a></li>
-                                        <li><a class="dropdown-item" href="#">Category 2</a></li>
-                                        <li><a class="dropdown-item" href="#">Category 3</a></li>
+                                        <li><a class="dropdown-item" href="#">Coffee</a></li>
+                                        <li><a class="dropdown-item" href="#">Frappe</a></li>
+                                        <li><a class="dropdown-item" href="#">Pasta</a></li>
                                     </ul>
                                 </div>
                                 <form class="d-flex">
-                                    <input class="form-control me-2 search-bar" type="search" placeholder="Search" aria-label="Search">
+                                    <input class="form-control me-2 search-bar" type="search" placeholder="Search Product" aria-label="Search">
                                     <button class="btn btn-outline-success" type="submit">Search</button>
                                 </form>
                             </div>
@@ -223,21 +250,7 @@ if (!isset($_SESSION['terminal_report_generated'])) {
                 }
             ?>
         </div>
-    
-        <?php
-            if (isset($_SESSION['cashierCode']) && $_SESSION['cashierCode'] == 'admin') {
-                $_SESSION['cashier_termireport'] = TRUE;
-            }
-            else {
-                echo ("<script>
-                window.onload = function() {
-                let text = 'Print a terminal report first!';
-                confirm(text);
-                }
-                </script>");
-                }
-                ?>
-                
+                    
                 <div class="modal fade" id="cashierModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
@@ -261,7 +274,6 @@ if (!isset($_SESSION['terminal_report_generated'])) {
                 </div>
                 <script>
                     $(document).ready(function() {
-                        // Function to load main content using AJAX
                         $('.main-content-load').click(function(e) {
                             e.preventDefault();
                             var url = $(this).attr('href');
