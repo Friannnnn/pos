@@ -12,6 +12,8 @@
 - gutter in sidebar
 - have a limit on shift timne (8am to 10pm only)
 - session a time where mag ttriger ng grayed out products if wala pa terminal report if meron na, should have a terminal report too
+- modal for payment
+  
 
 # To be added UI/UX
 - Dashboard layout (Admin) no dash for cashiers
