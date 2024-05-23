@@ -25,4 +25,5 @@
 
 - May 13 22:38 -- Making figma wireframe for dash ui
 - may 20 13:33 -- Making terminal id and terminal modal and terminal report for every login
+- may 23 13:45 -- pactch bugs from terminal report to dashboard
 
