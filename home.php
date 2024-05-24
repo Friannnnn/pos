@@ -191,7 +191,6 @@ if (mysqli_num_rows($result) > 0) {
                     </div>
                     <form class="d-flex">
                         <input class="form-control me-2 search-bar" type="search" placeholder="Search Product" aria-label="Search">
-                        <button class="btn btn-outline-success" type="submit">Search</button>
                             </form>
                         </div>
                     </div>
@@ -204,6 +203,8 @@ if (mysqli_num_rows($result) > 0) {
                         </div>
                             <?php endforeach; ?>
                     </div>
+
+
                 </div>
             <div class="ordered-list-container">
                 <h4>Ordered List</h4>

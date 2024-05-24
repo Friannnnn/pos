@@ -5,7 +5,6 @@
         $_SESSION['terminal_report_generated'] = true;
         header("Location: dashboard.php");
     }
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -19,19 +18,35 @@
         body {
             padding: 20px;
         }
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+        .btn-primary:disabled {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
     </style>
+    <script>
+        $(document).ready(function() {
+            $('#doneBtn').prop('disabled', true);
+            
+            $('#printBtn').click(function() {
+                $('#doneBtn').prop('disabled', false);
+            });
+        });
+    </script>
 </head>
 <body>
 
     <div class="container">
-        <h1>Terminal Report</h1>
+        <h1 class="mb-4">Terminal Report</h1>
         <form action="terminal_report.php" method="post">
-            <a id="printBtn" class="btn btn-primary" href="generate_pdf.php" >Print</a>
-            <input class="btn btn-primary" type="submit" name="done" value="Done">
+            <input id="doneBtn" class="btn btn-primary" type="submit" name="done" value="Done">
+            <a id="printBtn" class="btn btn-primary ms-2" target="_blank" href="./generate_pdf.php">Print</a>
         </form>
         <hr>
-        <div id="terminal-report-content">
-        </div>
+        
     </div>
 
 </body>
