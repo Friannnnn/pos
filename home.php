@@ -1,7 +1,7 @@
 <?php
 include 'dbcon.php'; 
 
-$query = "SELECT * FROM products"; 
+$query = "SELECT * FROM products ORDER BY category_id"; 
 $result = mysqli_query($conn, $query);
 
 $products = array();
@@ -90,28 +90,29 @@ if (mysqli_num_rows($result) > 0) {
         }
 
         .product-list {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 20px;
-        max-height: calc(100vh - 160px); 
-        overflow-y: auto;
-        overflow-x: hidden; 
-        scrollbar-width: thin; 
-        scrollbar-color: #D2AC67 transparent; 
-    }
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-height: calc(100vh - 160px); 
+            overflow-y: auto;
+            overflow-x: hidden; 
+            scrollbar-width: thin; 
+            scrollbar-color: #D2AC67 transparent; 
+        }
 
-    .product-list::-webkit-scrollbar {
-        width: 6px; 
-    }
+        .product-list::-webkit-scrollbar {
+            width: 6px; 
+        }
 
-    .product-list::-webkit-scrollbar-track {
-        background: transparent; 
-    }
+        .product-list::-webkit-scrollbar-track {
+            background: transparent; 
+        }
 
-    .product-list::-webkit-scrollbar-thumb {
-        background-color: #D2AC67; 
-        border-radius: 10px; 
-    }
+        .product-list::-webkit-scrollbar-thumb {
+            background-color: #D2AC67; 
+            border-radius: 10px; 
+        }
+
         .product-card {
             background-color: #FFFFFF;
             border-radius: 10px;
@@ -152,6 +153,8 @@ if (mysqli_num_rows($result) > 0) {
             padding: 20px;
             width: 300px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            height: 300px; /* Set a fixed height */
+            overflow-y: auto; /* Allow vertical scrolling */
         }
 
         .ordered-list {
@@ -171,6 +174,37 @@ if (mysqli_num_rows($result) > 0) {
         function showAlert(productName) {
             alert("Product clicked: " + productName);
         }
+
+        function filterProducts() {
+            var input, filter, productCards, productName, i, txtValue;
+            input = document.getElementById('searchBar');
+            filter = input.value.toUpperCase();
+            productCards = document.getElementsByClassName('product-card');
+
+            for (i = 0; i < productCards.length; i++) {
+                productName = productCards[i].getElementsByClassName('product-name')[0];
+                txtValue = productName.textContent || productName.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    productCards[i].style.display = "";
+                } else {
+                    productCards[i].style.display = "none";
+                }
+            }
+        }
+
+        function filterByCategory(categoryId) {
+            var productCards, i, cardCategory;
+            productCards = document.getElementsByClassName('product-card');
+
+            for (i = 0; i < productCards.length; i++) {
+                cardCategory = productCards[i].getAttribute('data-category-id');
+                if (cardCategory == categoryId || categoryId == 'all') {
+                    productCards[i].style.display = "";
+                } else {
+                    productCards[i].style.display = "none";
+                }
+            }
+        }
     </script>
 </head>
 
@@ -184,34 +218,32 @@ if (mysqli_num_rows($result) > 0) {
                             Category
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Coffee</a></li>
-                            <li><a class="dropdown-item" href="#">Frappe</a></li>
-                            <li><a class="dropdown-item" href="#">Pasta</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="filterByCategory('all')">All</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="filterByCategory(1)">Coffee</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="filterByCategory(2)">Frappe</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="filterByCategory(3)">Pasta</a></li>
                         </ul>
                     </div>
                     <form class="d-flex">
-                        <input class="form-control me-2 search-bar" type="search" placeholder="Search Product" aria-label="Search">
-                            </form>
-                        </div>
-                    </div>
-        <div class="product-list">
-                            <?php foreach ($products as $product): ?>
-                    <div class="product-card" onclick="showAlert('<?php echo $product['name']; ?>')">
-                        <img src="<?php echo $product['photo']; ?>" alt="<?php echo $product['name']; ?>">
-                    <div class="product-name"><?php echo $product['name']; ?></div>
-                            <div class="product-price">₱<?php echo number_format($product['price'], 2); ?></div>
-                        </div>
-                            <?php endforeach; ?>
-                    </div>
-
-
+                        <input id="searchBar" class="form-control me-2 search-bar" type="search" placeholder="Search Product" aria-label="Search" onkeyup="filterProducts()">
+                    </form>
                 </div>
-            <div class="ordered-list-container">
-                <h4>Ordered List</h4>
-                <ul class="ordered-list">
-                    </ul>
+            </div>
+            <div class="product-list">
+                <?php foreach ($products as $product): ?>
+                <div class="product-card" data-category-id="<?php echo $product['category_id']; ?>" onclick="showAlert('<?php echo $product['name']; ?>')">
+                    <img src="<?php echo $product['photo']; ?>" alt="<?php echo $product['name']; ?>">
+                    <div class="product-name"><?php echo $product['name']; ?></div>
+                    <div class="product-price">₱<?php echo number_format($product['price'], 2); ?></div>
+                </div>
+                <?php endforeach; ?>
             </div>
         </div>
-
+        <div class="ordered-list-container">
+            <h4>Ordered List</h4>
+            <ul class="ordered-list">
+            </ul>
+        </div>
+    </div>
 </body>
 </html>
