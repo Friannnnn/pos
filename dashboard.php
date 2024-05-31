@@ -117,7 +117,7 @@ if (!isset($_SESSION['terminal_report_generated'])) {
                         if ($_SESSION['cashierCode'] == 'admin') {
                             echo '
                             <li class="nav-item sidelink">  
-                                <a class="nav-link linkcol main-content-load" href="cashiers.php">Cashiers</a>
+                                <a class="nav-link linkcol main-content-load" href="add_cashier.php">Cashiers</a>
                             </li>
                             <li class="nav-item sidelink">
                                 <a class="nav-link linkcol main-content-load" href="dashboard.php">Dashboard</a>

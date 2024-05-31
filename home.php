@@ -153,8 +153,8 @@ if (mysqli_num_rows($result) > 0) {
             padding: 20px;
             width: 300px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            height: 300px; /* Set a fixed height */
-            overflow-y: auto; /* Allow vertical scrolling */
+            height: 300px; 
+            overflow-y: auto; 
         }
 
         .ordered-list {
