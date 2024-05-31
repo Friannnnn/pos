@@ -14,7 +14,9 @@
 - add_cashiers in admin side
 - make all sidebar functional fore report
 - make sql for every ttransac(who it is, when, and what is the transac) may vary depending on dev
-  # medium
+- adjust the size of the paperr
+
+# medium
 - add date and time in pos (admin / cashier)
 - product card fix where the name goes down if malaki ang photo
 - croppable image to resize 
