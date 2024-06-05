@@ -120,13 +120,13 @@ if (!isset($_SESSION['terminal_report_generated'])) {
                                 <a class="nav-link linkcol main-content-load" href="add_cashier.php">Cashiers</a>
                             </li>
                             <li class="nav-item sidelink">
-                                <a class="nav-link linkcol main-content-load" href="dashboard.php">Dashboard</a>
+                                <a class="nav-link linkcol main-content-load" href="dash.php">Dashboard</a>
                             </li>
                             <li class="nav-item sidelink">
                                 <a class="nav-link linkcol main-content-load" href="add_products.php">Products</a>
                             </li>
                             <li class="nav-item sidelink">
-                                <a class="nav-link linkcol main-content-load" href="#">Inventory</a>
+                                <a class="nav-link linkcol main-content-load" href="inventory.php">Inventory</a>
                             </li>
                             ';
                         } else {
