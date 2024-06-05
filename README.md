@@ -10,6 +10,13 @@
 - product adding 
 
 # Update asap (listed based on prio)
+# hard
+- add_cashiers in admin side
+- make all sidebar functional fore report
+- make sql for every ttransac(who it is, when, and what is the transac) may vary depending on dev
+- adjust the size of the paperr
+
+# medium
 - add date and time in pos (admin / cashier)
 - product card fix where the name goes down if malaki ang photo
 - croppable image to resize 
@@ -18,7 +25,8 @@
 - modal for cofiguring order
 - tables for order literal na table number
 - cups?
-
+ # easy
+ - nothing is easy lol
   
 
 # To be added UI/UX
@@ -38,3 +46,4 @@
 - may 20 13:33 -- Making terminal id and terminal modal and terminal report for every login
 - may 23 13:45 -- pactch bugs from terminal report to dashboard
 - may 28 -- bug fixed added category functionality
+- may 31 -- trying to do add cashier(not done)
