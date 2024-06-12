@@ -243,15 +243,15 @@ if (mysqli_num_rows($result) > 0) {
     <script>
         let selectedProduct = {};
 
-        function showAlert(productName, productImage, productPrice, categoryId) {
-            selectedProduct = { productName, productImage, productPrice, categoryId };
+        function showAlert(productName, productImage, productPrice, categoryId, editMode = false) {
+            selectedProduct = { productName, productImage, productPrice, categoryId, editMode };
             const modalTitle = document.getElementById('modalTitle');
             const modalBody = document.getElementById('modalBody');
             modalTitle.textContent = productName;
             let chipHTML = '';
             let addOnsHTML = '';
 
-            if (categoryId == 1) {
+            if (categoryId == 1) { // Assuming category_id 1 is Coffee, Frappe is 2, Pasta 3
                 chipHTML = `
                     <div class="d-flex justify-content-center mt-3">
                         <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
@@ -268,36 +268,66 @@ if (mysqli_num_rows($result) > 0) {
             addOnsHTML = `
                 <div class="d-flex justify-content-center mt-3">
                     <div class="btn-group" role="group" aria-label="Add-ons">
-                        <input type="checkbox" class="btn-check" id="extraShot" autocomplete="off" ${categoryId == 2 || categoryId == 3 ? 'disabled' : ''}>
-                        <label class="btn btn-outline-primary" for="extraShot">Extra shot</label>
+                        <input type="checkbox" class="btn-check" id="extraShot" autocomplete="off" ${categoryId == 2 || categoryId == 3 ? 'disabled' : ''} onchange="calculatePrice()">
+                        <label class="btn btn-outline-primary" for="extraShot">Extra shot (+₱20)</label>
 
-                        <input type="checkbox" class="btn-check" id="syrup" autocomplete="off" ${categoryId == 3 ? 'disabled' : ''}>
-                        <label class="btn btn-outline-primary" for="syrup">Syrup</label>
+                        <input type="checkbox" class="btn-check" id="syrup" autocomplete="off" ${categoryId == 3 ? 'disabled' : ''} onchange="calculatePrice()">
+                        <label class="btn btn-outline-primary" for="syrup">Syrup (+₱20)</label>
 
-                        <input type="checkbox" class="btn-check" id="breveMilk" autocomplete="off" ${categoryId == 3 ? 'disabled' : ''}>
-                        <label class="btn btn-outline-primary" for="breveMilk">Breve milk</label>
+                        <input type="checkbox" class="btn-check" id="breveMilk" autocomplete="off" ${categoryId == 3 ? 'disabled' : ''} onchange="calculatePrice()">
+                        <label class="btn btn-outline-primary" for="breveMilk">Breve milk (+₱20)</label>
 
-                        <input type="checkbox" class="btn-check" id="whippedCream" autocomplete="off" ${categoryId == 3 ? 'disabled' : ''}>
-                        <label class="btn btn-outline-primary" for="whippedCream">Whipped cream</label>
+                        <input type="checkbox" class="btn-check" id="whippedCream" autocomplete="off" ${categoryId == 3 ? 'disabled' : ''} onchange="calculatePrice()">
+                        <label class="btn btn-outline-primary" for="whippedCream">Whipped cream (+₱30)</label>
                     </div>
                 </div>
             `;
 
             modalBody.innerHTML = `
-                <p class="mt-3">Product Name: ${productName}</p>
-                <p class="mt-3">Price: ₱${productPrice}</p>
+                <p class="mt-3">Product Name: <span id="productName">${productName}</span></p>
+                <p class="mt-3">Price: ₱<span id="productPrice">${productPrice}</span></p>
                 ${chipHTML}
                 ${addOnsHTML}
             `;
             var myModal = new bootstrap.Modal(document.getElementById('myModal'), {});
             myModal.show();
+
+            if (editMode) {
+                // Pre-select options based on selectedProduct details when editing
+                const { type, addOns } = selectedProduct;
+                if (type === 'iced') document.getElementById('icedOption').checked = true;
+                if (type === 'hot') document.getElementById('hotOption').checked = true;
+                if (addOns) {
+                    document.getElementById('extraShot').checked = addOns.includes('extraShot');
+                    document.getElementById('syrup').checked = addOns.includes('syrup');
+                    document.getElementById('breveMilk').checked = addOns.includes('breveMilk');
+                    document.getElementById('whippedCream').checked = addOns.includes('whippedCream');
+                }
+                calculatePrice();
+            }
         }
 
         function toggleAddOns(enable) {
             document.getElementById('syrup').disabled = !enable;
+            document.getElementById('breveMilk').disabled = !enable;
             document.getElementById('whippedCream').disabled = !enable;
         }
+         
+        // Price Calculation
+        function calculatePrice() {
+            let basePrice = selectedProduct.productPrice;
+            if (document.getElementById('icedOption').checked) basePrice = 85.00;
+            if (document.getElementById('hotOption').checked) basePrice = 75.00;
 
+            let addOnPrice = 0.00;
+            if (document.getElementById('extraShot').checked) addOnPrice += 20.00;
+            if (document.getElementById('syrup').checked) addOnPrice += 20.00;
+            if (document.getElementById('breveMilk').checked) addOnPrice += 20.00;
+            if (document.getElementById('whippedCream').checked) addOnPrice += 30.00;
+
+            document.getElementById('productPrice').innerText = basePrice + addOnPrice;
+        }
+        // Filtration lol
         function filterProducts() {
             var input, filter, productCards, productName, i, txtValue;
             input = document.getElementById('searchBar');
@@ -332,11 +362,28 @@ if (mysqli_num_rows($result) > 0) {
         function addItemToOrder() {
             const orderedList = document.querySelector('.ordered-list');
             const item = document.createElement('li');
+            const productPrice = document.getElementById('productPrice').innerText;
+            const type = document.getElementById('icedOption').checked ? 'iced' : 'hot';
+            const addOns = [];
+
+            if (document.getElementById('extraShot').checked) addOns.push('extraShot');
+            if (document.getElementById('syrup').checked) addOns.push('syrup');
+            if (document.getElementById('breveMilk').checked) addOns.push('breveMilk');
+            if (document.getElementById('whippedCream').checked) addOns.push('whippedCream');
+
+            selectedProduct = {
+                ...selectedProduct,
+                productPrice,
+                type,
+                addOns
+            };
+
             item.innerHTML = `
-                ${selectedProduct.productName} - ₱${selectedProduct.productPrice}
+                ${selectedProduct.productName} - ₱${productPrice}
                 <span class="action-btn" onclick="editItem(this)">Edit</span>
                 <span class="action-btn" onclick="deleteItem(this)">Delete</span>
             `;
+            item.dataset.product = JSON.stringify(selectedProduct);
             orderedList.appendChild(item);
             const myModal = bootstrap.Modal.getInstance(document.getElementById('myModal'));
             myModal.hide();
@@ -344,10 +391,8 @@ if (mysqli_num_rows($result) > 0) {
 
         function editItem(element) {
             const item = element.parentElement;
-            const itemDetails = item.firstChild.textContent.split(' - ');
-            selectedProduct.productName = itemDetails[0];
-            selectedProduct.productPrice = itemDetails[1].replace('₱', '');
-            showAlert(selectedProduct.productName, '', selectedProduct.productPrice, selectedProduct.categoryId);
+            selectedProduct = JSON.parse(item.dataset.product);
+            showAlert(selectedProduct.productName, selectedProduct.productImage, selectedProduct.productPrice, selectedProduct.categoryId, true);
             item.remove();
         }
 
@@ -395,7 +440,7 @@ if (mysqli_num_rows($result) > 0) {
             <ul class="ordered-list"></ul>
         </div>
 
-
+        <!-- Modal -->
         <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
