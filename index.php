@@ -2,34 +2,6 @@
 session_start();
 include("dbcon.php");
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['register'])) {
-    if (!empty($_POST['firstName']) && !empty($_POST['lastName']) && !empty($_POST['email']) && !empty($_POST['password'])) {
-        $firstName = $_POST['firstName'];
-        $lastName = $_POST['lastName'];
-        $email = $_POST['email'];
-        $password = $_POST['password'];
-        $shift_start = $_POST['shift-start'];
-        $shift_end = $_POST['shift-end'];
-        
-        $codeLength = 8;
-        $charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        $generatedCode = "";
-        for ($i = 0; $i < $codeLength; $i++) {
-            $generatedCode .= $charset[rand(0, strlen($charset) - 1)];
-        }
-
-        $sql = "INSERT INTO cashiers (first_name, last_name, email, password, generated_code,shift_start,shift_end) VALUES ('$firstName', '$lastName', '$email', '$password', '$generatedCode','$shift_start','$shift_end')";
-        $conn->query($sql);
-        
-        $_SESSION['cashierName'] = $firstName . " " . $lastName;
-        $_SESSION['cashierCode'] = $generatedCode;
-
-        header("Location: dashboard.php");
-        exit();
-    } else {
-        echo "<script>alert('Please fill all the fields for registration.');</script>";
-    }
-}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
     if (!empty($_POST['cashierCode']) && !empty($_POST['password'])) {
@@ -44,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
 
-            $_SESSION['cashierName'] = $row['first_name'] . " " . $row['last_name'];
+            $_SESSION['cashierName'] = $row['cashierName'] ;
             $_SESSION['cashierCode'] = $cashierCode;
 
             header("Location: dashboard.php");

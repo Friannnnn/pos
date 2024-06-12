@@ -7,7 +7,8 @@ if (!isset($_SESSION['cashierName']) || !isset($_SESSION['cashierCode'])) {
     exit();
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+// Handle form submission to add a new cashier
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'add') {
     if (isset($_POST['cashierName']) && isset($_POST['cashierCode']) && isset($_POST['cashierEmail']) && isset($_POST['cashierPassword']) && isset($_POST['startShift']) && isset($_POST['endShift'])) {
         $cashierName = $_POST['cashierName'];
         $cashierCode = $_POST['cashierCode'];
@@ -29,6 +30,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $conn->close();
     } else {
         echo "All fields are required.";
+    }
+    exit();
+}
+
+// Handle form submission to delete a cashier
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete') {
+    if (isset($_POST['cashierId'])) {
+        $cashierId = $_POST['cashierId'];
+
+        $stmt = $conn->prepare("DELETE FROM cashiers WHERE id = ?");
+        $stmt->bind_param("i", $cashierId);
+
+        if ($stmt->execute()) {
+            echo "Cashier deleted successfully";
+        } else {
+            echo "Error: " . $stmt->error;
+        }
+
+        $stmt->close();
+        $conn->close();
+    } else {
+        echo "Cashier ID is required.";
     }
     exit();
 }
@@ -101,18 +124,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <th scope="col">Shift Start</th>
                 <th scope="col">Shift End</th>
                 <th scope="col">Date Hired</th>
+                <th scope="col">Actions</th>
             </tr>
         </thead>
         <tbody id="cashierTableBody">
             <?php
-            $result = $conn->query("SELECT cashierName, generated_code, shift_start, shift_end, date_added FROM cashiers");
+            $result = $conn->query("SELECT id, cashierName, generated_code, shift_start, shift_end, date_added FROM cashiers");
             while ($row = $result->fetch_assoc()) {
-                echo "<tr>
+                echo "<tr data-id='{$row['id']}'>
                         <td>{$row['cashierName']}</td>
                         <td>{$row['generated_code']}</td>
                         <td>{$row['shift_start']}</td>
                         <td>{$row['shift_end']}</td>
                         <td>{$row['date_added']}</td>
+                        <td><button class='btn btn-danger btn-delete'>Fire</button></td>
                     </tr>";
             }
             $conn->close();
@@ -131,6 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="modal-body">
                 <form id="addCashierForm">
+                    <input type="hidden" name="action" value="add">
                     <div class="mb-3">
                         <label for="cashierName" class="form-label">Cashier Name</label>
                         <input type="text" class="form-control" id="cashierName" name="cashierName" required>
@@ -203,6 +229,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 location.reload();
             }
         });
+    });
+
+    $('.btn-delete').click(function() {
+        var row = $(this).closest('tr');
+        var cashierId = row.data('id');
+
+        if (confirm('Are you sure you want to delete this cashier?')) {
+            $.ajax({
+                type: 'POST',
+                url: 'add_cashier.php',
+                data: { action: 'delete', cashierId: cashierId },
+                success: function(response) {
+                    alert(response);
+                    location.reload();
+                }
+            });
+        }
     });
 </script>
 </body>

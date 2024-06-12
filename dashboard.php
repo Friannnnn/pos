@@ -39,6 +39,9 @@ if (!isset($_SESSION['terminal_report_generated'])) {
             background-color: #F5F4F2;
             color: black;
         }
+        .containerr-brand {
+            padding:12px;
+        }
 
         .container-fluid {
             position: relative;
@@ -98,6 +101,24 @@ if (!isset($_SESSION['terminal_report_generated'])) {
             pointer-events: none;
             color: grey;
         }
+
+        .mt-auto {
+            margin-top: 300px !important;
+        }
+
+        .logout-button {
+            color: black;
+            padding: 10px;
+            border-radius: 5px;
+            text-decoration: none;
+            border:none;
+        }
+
+        .logout-button:hover,
+        .logout-button:focus {
+            color: black;
+            background-color: #d2a56c;
+        }
     </style>
 </head>
 
@@ -106,8 +127,8 @@ if (!isset($_SESSION['terminal_report_generated'])) {
         <div class="row">
             <div class="col-md-4">
                 <div class="sidebar">
-                    <div class="containerr">
-                        <span class="brand-icon"><i class="bi bi-shop"></i></span>
+                    <div class="containerr-brand">
+                      
                         <span class="brand-name">Blend n' Sip</span>
                     </div>
 
@@ -135,7 +156,7 @@ if (!isset($_SESSION['terminal_report_generated'])) {
                                 <a class="nav-link linkcol main-content-load ' . ($_SESSION['terminal_report_generated'] ? '' : 'disabled-link') . '" id="sidebar-home" href="home.php">Home</a>
                             </li>
                             <li class="nav-item sidelink">
-                                <a class="nav-link linkcol main-content-load ' . ($_SESSION['terminal_report_generated'] ? '' : 'disabled-link') . '" href="sales.php">Sales</a>
+                                <a class="nav-link linkcol main-content-load ' . ($_SESSION['terminal_report_generated'] ? '' : 'disabled-link') . '" href="transactions.php">Transactions</a>
                             </li>';
                         }
 
@@ -155,17 +176,8 @@ if (!isset($_SESSION['terminal_report_generated'])) {
 
                     <div class="profile mt-auto">
                         <div class="containerr">
-                            <div class="nav-link profile dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown">
-                                <small><?php echo $_SESSION['cashierCode']; ?></small>
-                            </div>
-                            <ul class="dropdown-menu" aria-labelledby="profileDropdown">
-                                <?php 
-                                    if ($_SESSION['cashierCode'] == 'admin') {
-                                        echo '<li><a class="dropdown-item" id="cashier" href="#" data-bs-toggle="modal" data-bs-target="#cashierModal">Cashiers</a></li>';
-                                    }
-                                ?>
-                                <li><form method="post"><button class="dropdown-item" type="submit" name="logout">Logout</button></form></li>
-                            </ul>
+                                I'm <?php echo $_SESSION['cashierName']; ?>
+                                <form method="post"> <br><button class="logout-button" type="submit" name="logout">Logout</button></form>
                         </div>
                     </div>
                 </div>
@@ -182,22 +194,9 @@ if (!isset($_SESSION['terminal_report_generated'])) {
             </script>
         </div>
 
-        <div class="modal fade" id="cashierModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="registerModalLabel">Cashiers Registered</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-table">
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     </div>
-</body>
 
+</body>
 </html>
