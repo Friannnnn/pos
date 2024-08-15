@@ -1,6 +1,6 @@
 # DOCUMENTATION GOES HERE 
 
-# LANGUAGES USED - PHP(BOOTSTRAP 5.3), AJAX(for realtime update), Figma(UI), dbdiag(DB Design)
+# LANGUAGES USED - PHP(BOOTSTRAP 5.3), AJAX(for realtime update), dbdiag(DB Design)
 
 # Done
 - Login 

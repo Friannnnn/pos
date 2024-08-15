@@ -7,7 +7,6 @@ if (!isset($_SESSION['cashierName']) || !isset($_SESSION['cashierCode'])) {
     exit();
 }
 
-// Handle form submission to add a new cashier
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'add') {
     if (isset($_POST['cashierName']) && isset($_POST['cashierCode']) && isset($_POST['cashierEmail']) && isset($_POST['cashierPassword']) && isset($_POST['startShift']) && isset($_POST['endShift'])) {
         $cashierName = $_POST['cashierName'];
@@ -34,7 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     exit();
 }
 
-// Handle form submission to delete a cashier
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete') {
     if (isset($_POST['cashierId'])) {
         $cashierId = $_POST['cashierId'];
@@ -146,7 +144,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     </table>
 </div>
 
-<!-- Modal -->
 <div class="modal fade" id="addCashierModal" tabindex="-1" aria-labelledby="addCashierModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">

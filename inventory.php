@@ -19,8 +19,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $stmt = $conn->prepare("INSERT INTO raw_materials (name, original_price, supplier_name, quantity, stocked_date, expiry_date) VALUES (?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("ssssss", $materialName, $originalPrice, $supplierName, $quantity, $stockedDate, $expiryDate);
 
+        if ($stmt->execute()) {
+            $response = [
+                'status' => 'success',
+                'data' => [
+                    'material_name' => $materialName,
+                    'original_price' => $originalPrice,
+                    'supplier_name' => $supplierName,
+                    'quantity' => $quantity,
+                    'stocked_date' => $stockedDate,
+                    'expiry_date' => $expiryDate
+                ]
+            ];
+
+        } else {
+            $response = ['status' => 'error', 'message' => $stmt->error];
+        }
 
         $stmt->close();
+        echo json_encode($response);
         exit();
     } elseif ($_POST['action'] == 'getWastages') {
         $query = "
@@ -36,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }
         }
 
-
+        echo json_encode($wastages);
         exit();
     }
 }
@@ -107,7 +124,7 @@ $result = $conn->query($query);
                             <th>Expiry Date</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="inventoryTableBody">
                         <?php
                         if ($result->num_rows > 0) {
                             while ($row = $result->fetch_assoc()) {
@@ -214,7 +231,18 @@ $result = $conn->query($query);
                         if (response.status == 'success') {
                             $('#addMaterialModal').modal('hide');
                             $('#addMaterialForm')[0].reset();
-                            location.reload();
+
+                            const newRow = `
+                                <tr>
+                                    <td>${response.data.material_name}</td>
+                                    <td>${response.data.original_price}</td>
+                                    <td>${response.data.supplier_name}</td>
+                                    <td>${response.data.quantity}</td>
+                                    <td>${response.data.stocked_date}</td>
+                                    <td>${response.data.expiry_date}</td>
+                                </tr>
+                            `;
+                            $('#inventoryTableBody').append(newRow);
                         } else {
                             $('#message').html('<div class="alert alert-danger">An error occurred: ' + response.message + '</div>');
                         }

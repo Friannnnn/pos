@@ -1,6 +1,8 @@
 <?php
+session_start();
 include 'dbcon.php';
 
+// Fetch products from database
 $query = "SELECT * FROM products ORDER BY category_id";
 $result = mysqli_query($conn, $query);
 
@@ -9,6 +11,20 @@ if (mysqli_num_rows($result) > 0) {
     while ($row = mysqli_fetch_assoc($result)) {
         $products[] = $row;
     }
+}
+
+// Initialize ordered products session variable if not already set
+if (!isset($_SESSION['ordered_products'])) {
+    $_SESSION['ordered_products'] = [];
+}
+
+// Handling form submission (adding product to cart)
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $product = [
+        'name' => $_POST['productName'],
+        'price' => $_POST['productPrice']
+    ];
+    $_SESSION['ordered_products'][] = $product;
 }
 ?>
 <!DOCTYPE html>
@@ -24,16 +40,18 @@ if (mysqli_num_rows($result) > 0) {
         body {
             font-family: Inter, Arial, sans-serif;
             min-height: 100vh;
-            flex-direction: column;
             background-color: #F5F4F2;
             color: #241F1D;
             margin: 0;
+            display: flex;
+            flex-direction: column;
         }
 
         .container {
-            width: 960px;
-            margin: 0 auto;
+            flex: 1;
             display: flex;
+            flex-direction: row;
+            justify-content: space-between;
             padding: 20px;
         }
 
@@ -51,7 +69,7 @@ if (mysqli_num_rows($result) > 0) {
         }
 
         .main-content {
-            flex: 1;
+            flex: 3;
             padding: 20px;
             box-sizing: border-box;
         }
@@ -106,24 +124,24 @@ if (mysqli_num_rows($result) > 0) {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 20px;
-            max-height: calc(100vh - 160px); 
+            max-height: calc(100vh - 160px);
             overflow-y: auto;
-            overflow-x: hidden; 
-            scrollbar-width: thin; 
-            scrollbar-color: #D2AC67 transparent; 
+            overflow-x: hidden;
+            scrollbar-width: thin;
+            scrollbar-color: #D2AC67 transparent;
         }
 
         .product-list::-webkit-scrollbar {
-            width: 6px; 
+            width: 6px;
         }
 
         .product-list::-webkit-scrollbar-track {
-            background: transparent; 
+            background: transparent;
         }
 
         .product-list::-webkit-scrollbar-thumb {
-            background-color: #D2AC67; 
-            border-radius: 10px; 
+            background-color: #D2AC67;
+            border-radius: 10px;
         }
 
         .product-card {
@@ -139,9 +157,8 @@ if (mysqli_num_rows($result) > 0) {
         }
 
         .product-card img {
-            width: 100%;
-            height: auto;
-            max-height: 200px;
+            width: 100px;
+            height: 100px;
             object-fit: cover;
             border-radius: 10px;
         }
@@ -166,14 +183,17 @@ if (mysqli_num_rows($result) > 0) {
             padding: 20px;
             width: 300px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            height: 300px; 
-            overflow-y: auto; 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .ordered-list {
             list-style-type: none;
             padding: 0;
             margin: 0;
+            flex: 1;
+            overflow-y: auto;
         }
 
         .ordered-list li {
@@ -184,14 +204,6 @@ if (mysqli_num_rows($result) > 0) {
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-
-        .myModal {
-            display: none;
-        }
-
-        .mt-auto {
-            margin-top: 300px !important;
         }
 
         .logout-button {
@@ -219,7 +231,7 @@ if (mysqli_num_rows($result) > 0) {
             border-color: #D2AC67;
         }
 
-        .btn-check:checked + .btn {
+        .btn-check:checked+.btn {
             background-color: #D2AC67;
             color: black;
             border-color: #D2AC67;
@@ -239,227 +251,276 @@ if (mysqli_num_rows($result) > 0) {
             margin-left: 10px;
             cursor: pointer;
         }
+
+        .pay-now-container {
+            width: 100%;
+            text-align: center;
+        }
+
+        .pay-now-btn {
+            background-color: #D2AC67;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .pay-now-btn:hover {
+            background-color: #8B4513;
+        }
     </style>
     <script>
-        let selectedProduct = {};
+         let selectedProduct = {};
 
-        function showAlert(productName, productImage, productPrice, categoryId, editMode = false) {
-            selectedProduct = { productName, productImage, productPrice, categoryId, editMode };
-            const modalTitle = document.getElementById('modalTitle');
-            const modalBody = document.getElementById('modalBody');
-            modalTitle.textContent = productName;
-            let chipHTML = '';
-            let addOnsHTML = '';
+function showAlert(productName, productImage, productPrice, categoryId, editMode = false) {
+    selectedProduct = {
+        productName,
+        productImage,
+        productPrice,
+        categoryId,
+        editMode
+    };
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
+    modalTitle.textContent = productName;
+    let chipHTML = '';
+    let addOnsHTML = '';
 
-            if (categoryId == 1) { // Assuming category_id 1 is Coffee, Frappe is 2, Pasta 3
-                chipHTML = `
-                    <div class="d-flex justify-content-center mt-3">
-                        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                            <input type="radio" class="btn-check" name="options" id="hotOption" autocomplete="off" onchange="toggleAddOns(false)">
-                            <label class="btn btn-outline-primary" for="hotOption">Hot</label>
+    if (categoryId == 1) { 
+        chipHTML = `
+            <div class="d-flex justify-content-center mt-3">
+                <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                    <input type="radio" class="btn-check" name="options" id="hotOption" autocomplete="off" onchange="toggleAddOns(false)">
+                    <label class="btn btn-outline-primary" for="hotOption">Hot</label>
 
-                            <input type="radio" class="btn-check" name="options" id="icedOption" autocomplete="off" onchange="toggleAddOns(true)">
-                            <label class="btn btn-outline-primary" for="icedOption">Iced</label>
-                        </div>
-                    </div>
-                `;
+                    <input type="radio" class="btn-check" name="options" id="icedOption" autocomplete="off" onchange="toggleAddOns(true)">
+                    <label class="btn btn-outline-primary" for="icedOption">Iced</label>
+                </div>
+            </div>
+        `;
+    }
+
+    addOnsHTML = `
+        <div class="d-flex justify-content-center mt-3">
+            <div class="btn-group" role="group" aria-label="Add-ons">
+                <input type="checkbox" class="btn-check" id="extraShot" autocomplete="off" ${categoryId == 2 || categoryId == 3 ? 'disabled' : ''} onchange="calculatePrice()">
+                <label class="btn btn-outline-primary" for="extraShot">Extra shot (+₱20)</label>
+
+                <input type="checkbox" class="btn-check" id="syrup" autocomplete="off" ${categoryId == 3 ? 'disabled' : ''} onchange="calculatePrice()">
+                <label class="btn btn-outline-primary" for="syrup">Syrup (+₱15)</label>
+            </div>
+        </div>
+    `;
+
+    modalBody.innerHTML = `
+        <div>
+            <img src="${productImage}" alt="${productName}" class="img-fluid">
+            <p class="text-center mt-3">Price: ₱<span id="productPrice">${productPrice}</span></p>
+            ${chipHTML}
+            ${addOnsHTML}
+        </div>
+    `;
+    calculatePrice();
+    new bootstrap.Modal(document.getElementById('productModal')).show();
+}
+
+function calculatePrice() {
+    let finalPrice = selectedProduct.productPrice;
+    const extraShot = document.getElementById('extraShot').checked;
+    const syrup = document.getElementById('syrup').checked;
+
+    if (extraShot) {
+        finalPrice += 20;
+    }
+
+    if (syrup) {
+        finalPrice += 15;
+    }
+
+    document.getElementById('productPrice').innerText = finalPrice;
+}
+
+function toggleAddOns(enable) {
+    document.getElementById('extraShot').disabled = !enable;
+    document.getElementById('syrup').disabled = !enable;
+}
+
+function toggleView(id) {
+    var element = document.getElementById(id);
+    if (element.style.display === "none") {
+        element.style.display = "block";
+    } else {
+        element.style.display = "none";
+    }
+}
+
+function updateCartCount() {
+    const orderedList = document.getElementById('orderedList');
+    const cartCount = orderedList.children.length;
+    const cartCountBadge = document.getElementById('cartCount');
+    cartCountBadge.innerText = cartCount;
+
+    const totalPriceElement = document.getElementById('totalPrice');
+    let totalPrice = 0;
+    for (let i = 0; i < cartCount; i++) {
+        totalPrice += parseFloat(orderedList.children[i].dataset.price);
+    }
+    totalPriceElement.innerText = totalPrice.toFixed(2);
+}
+
+function addToCart() {
+    const orderedList = document.getElementById('orderedList');
+    const listItem = document.createElement('li');
+    listItem.className = 'd-flex justify-content-between align-items-center';
+    listItem.dataset.price = document.getElementById('productPrice').innerText;
+    listItem.innerHTML = `
+        ${selectedProduct.productName}
+        <button class="btn btn-outline-danger btn-sm action-btn" onclick="removeFromCart(this)">Remove</button>
+    `;
+    orderedList.appendChild(listItem);
+    updateCartCount();
+}
+
+function removeFromCart(button) {
+    const listItem = button.parentNode;
+    listItem.remove();
+    updateCartCount();
+}
+
+        function payNow() {
+            const orderedList = document.getElementById('orderedList');
+            let itemsList = '';
+            for (let i = 0; i < orderedList.children.length; i++) {
+                itemsList += `<li>${orderedList.children[i].innerText.split('Remove')[0]}</li>`;
             }
-
-            addOnsHTML = `
-                <div class="d-flex justify-content-center mt-3">
-                    <div class="btn-group" role="group" aria-label="Add-ons">
-                        <input type="checkbox" class="btn-check" id="extraShot" autocomplete="off" ${categoryId == 2 || categoryId == 3 ? 'disabled' : ''} onchange="calculatePrice()">
-                        <label class="btn btn-outline-primary" for="extraShot">Extra shot (+₱20)</label>
-
-                        <input type="checkbox" class="btn-check" id="syrup" autocomplete="off" ${categoryId == 3 ? 'disabled' : ''} onchange="calculatePrice()">
-                        <label class="btn btn-outline-primary" for="syrup">Syrup (+₱20)</label>
-
-                        <input type="checkbox" class="btn-check" id="breveMilk" autocomplete="off" ${categoryId == 3 ? 'disabled' : ''} onchange="calculatePrice()">
-                        <label class="btn btn-outline-primary" for="breveMilk">Breve milk (+₱20)</label>
-
-                        <input type="checkbox" class="btn-check" id="whippedCream" autocomplete="off" ${categoryId == 3 ? 'disabled' : ''} onchange="calculatePrice()">
-                        <label class="btn btn-outline-primary" for="whippedCream">Whipped cream (+₱30)</label>
-                    </div>
+            const totalPrice = document.getElementById('totalPrice').innerText;
+            document.getElementById('payModalBody').innerHTML = `
+                <p>Your total amount is ₱${totalPrice}</p>
+                <ul>${itemsList}</ul>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="paymentMethod" id="cash" value="cash" checked>
+                    <label class="form-check-label" for="cash">Cash</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="paymentMethod" id="gcash" value="gcash">
+                    <label class="form-check-label" for="gcash">GCash</label>
                 </div>
             `;
+            new bootstrap.Modal(document.getElementById('payModal')).show();
+        }
+        function confirmPayment() {
+            // Close the Pay Modal
+            const payModal = bootstrap.Modal.getInstance(document.getElementById('payModal'));
+            payModal.hide();
 
-            modalBody.innerHTML = `
-                <p class="mt-3">Product Name: <span id="productName">${productName}</span></p>
-                <p class="mt-3">Price: ₱<span id="productPrice">${productPrice}</span></p>
-                ${chipHTML}
-                ${addOnsHTML}
-            `;
-            var myModal = new bootstrap.Modal(document.getElementById('myModal'), {});
-            myModal.show();
-
-            if (editMode) {
-                // Pre-select options based on selectedProduct details when editing
-                const { type, addOns } = selectedProduct;
-                if (type === 'iced') document.getElementById('icedOption').checked = true;
-                if (type === 'hot') document.getElementById('hotOption').checked = true;
-                if (addOns) {
-                    document.getElementById('extraShot').checked = addOns.includes('extraShot');
-                    document.getElementById('syrup').checked = addOns.includes('syrup');
-                    document.getElementById('breveMilk').checked = addOns.includes('breveMilk');
-                    document.getElementById('whippedCream').checked = addOns.includes('whippedCream');
-                }
-                calculatePrice();
+            // Prepare ordered items array
+            const orderedItems = [];
+            const orderedList = document.getElementById('orderedList');
+            for (let i = 0; i < orderedList.children.length; i++) {
+                orderedItems.push({
+                    name: orderedList.children[i].innerText.split('Remove')[0].trim(),
+                    price: parseFloat(orderedList.children[i].dataset.price)
+                });
             }
+
+            // Prepare payment method
+            const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+
+            // Set hidden inputs in the form
+            document.getElementById('orderedItemsInput').value = JSON.stringify(orderedItems);
+            document.getElementById('paymentMethodInput').value = paymentMethod;
+
+            // Submit the form to generate receipt
+            document.getElementById('paymentForm').submit();
+
+            // Clear the ordered list and update cart count and total price (optional)
+            orderedList.innerHTML = '';
+            updateCartCount();
         }
 
-        function toggleAddOns(enable) {
-            document.getElementById('syrup').disabled = !enable;
-            document.getElementById('breveMilk').disabled = !enable;
-            document.getElementById('whippedCream').disabled = !enable;
-        }
-         
-        // Price Calculation
-        function calculatePrice() {
-            let basePrice = selectedProduct.productPrice;
-            if (document.getElementById('icedOption').checked) basePrice = 85.00;
-            if (document.getElementById('hotOption').checked) basePrice = 75.00;
 
-            let addOnPrice = 0.00;
-            if (document.getElementById('extraShot').checked) addOnPrice += 20.00;
-            if (document.getElementById('syrup').checked) addOnPrice += 20.00;
-            if (document.getElementById('breveMilk').checked) addOnPrice += 20.00;
-            if (document.getElementById('whippedCream').checked) addOnPrice += 30.00;
 
-            document.getElementById('productPrice').innerText = basePrice + addOnPrice;
-        }
-        // Filtration lol
-        function filterProducts() {
-            var input, filter, productCards, productName, i, txtValue;
-            input = document.getElementById('searchBar');
-            filter = input.value.toUpperCase();
-            productCards = document.getElementsByClassName('product-card');
-
-            for (i = 0; i < productCards.length; i++) {
-                productName = productCards[i].getElementsByClassName('product-name')[0];
-                txtValue = productName.textContent || productName.innerText;
-                if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                    productCards[i].style.display = "";
-                } else {
-                    productCards[i].style.display = "none";
-                }
-            }
-        }
-
-        function filterByCategory(categoryId) {
-            var productCards, i, cardCategory;
-            productCards = document.getElementsByClassName('product-card');
-
-            for (i = 0; i < productCards.length; i++) {
-                cardCategory = productCards[i].getAttribute('data-category-id');
-                if (cardCategory == categoryId || categoryId == 'all') {
-                    productCards[i].style.display = "";
-                } else {
-                    productCards[i].style.display = "none";
-                }
-            }
-        }
-
-        function addItemToOrder() {
-            const orderedList = document.querySelector('.ordered-list');
-            const item = document.createElement('li');
-            const productPrice = document.getElementById('productPrice').innerText;
-            const type = document.getElementById('icedOption').checked ? 'iced' : 'hot';
-            const addOns = [];
-
-            if (document.getElementById('extraShot').checked) addOns.push('extraShot');
-            if (document.getElementById('syrup').checked) addOns.push('syrup');
-            if (document.getElementById('breveMilk').checked) addOns.push('breveMilk');
-            if (document.getElementById('whippedCream').checked) addOns.push('whippedCream');
-
-            selectedProduct = {
-                ...selectedProduct,
-                productPrice,
-                type,
-                addOns
-            };
-
-            item.innerHTML = `
-                ${selectedProduct.productName} - ₱${productPrice}
-                <span class="action-btn" onclick="editItem(this)">Edit</span>
-                <span class="action-btn" onclick="deleteItem(this)">Delete</span>
-            `;
-            item.dataset.product = JSON.stringify(selectedProduct);
-            orderedList.appendChild(item);
-            const myModal = bootstrap.Modal.getInstance(document.getElementById('myModal'));
-            myModal.hide();
-        }
-
-        function editItem(element) {
-            const item = element.parentElement;
-            selectedProduct = JSON.parse(item.dataset.product);
-            showAlert(selectedProduct.productName, selectedProduct.productImage, selectedProduct.productPrice, selectedProduct.categoryId, true);
-            item.remove();
-        }
-
-        function deleteItem(element) {
-            const item = element.parentElement;
-            item.remove();
-        }
+window.onload = function () {
+    updateCartCount();
+};
     </script>
 </head>
 
-<body>
-    <div class="container">
-        <div class="main-content">
-            <div class="row mb-3">
-                <div class="col-md-12 d-flex align-items-center justify-content-between">
-                    <div class="dropdown">
-                        <button class="category-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Category
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#" onclick="filterByCategory('all')">All</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="filterByCategory(1)">Coffee</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="filterByCategory(2)">Frappe</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="filterByCategory(3)">Pasta</a></li>
-                        </ul>
-                    </div>
-                    <form class="d-flex">
-                        <input id="searchBar" class="form-control me-2 search-bar" type="search" placeholder="Search Product" aria-label="Search" onkeyup="filterProducts()">
-                    </form>
+    <body>
+        <div class="container">
+            <div class="ordered-list-container">
+                <h4>Ordered List <span id="cartCount" class="badge bg-secondary">0</span></h4>
+                <ul id="orderedList" class="ordered-list"></ul>
+                <div class="pay-now-container">
+                    <button class="pay-now-btn" onclick="payNow()">Pay Now</button>
+                </div>
+                <div class="mt-2 text-end">
+                    <strong>Total: ₱<span id="totalPrice">0.00</span></strong>
                 </div>
             </div>
-            <div class="product-list">
-                <?php foreach ($products as $product): ?>
-                <div class="product-card" data-category-id="<?php echo $product['category_id']; ?>" onclick="showAlert('<?php echo $product['name']; ?>', '<?php echo $product['photo']; ?>', '<?php echo number_format($product['price'], 2); ?>', '<?php echo $product['category_id']; ?>')">
-                    <img src="<?php echo $product['photo']; ?>" alt="<?php echo $product['name']; ?>">
-                    <div class="product-name"><?php echo $product['name']; ?></div>
-                    <div class="product-price">₱<?php echo number_format($product['price'], 2); ?></div>
+            <div class="main-content">
+                <h1 class="text-center">Menu</h1>
+                <div class="product-list">
+                    <?php foreach ($products as $product) : ?>
+                        <div class="product-card"
+                            onclick="showAlert('<?php echo $product['name']; ?>', '<?php echo $product['photo']; ?>', <?php echo $product['price']; ?>, <?php echo $product['category_id']; ?>)">
+                            <img src="<?php echo $product['photo']; ?>" alt="<?php echo $product['name']; ?>">
+                            <p class="product-name"><?php echo $product['name']; ?></p>
+                            <p class="product-price">₱<?php echo $product['price']; ?></p>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
-                <?php endforeach; ?>
             </div>
         </div>
 
-        <div class="ordered-list-container">
-            <h4>Ordered List</h4>
-            <ul class="ordered-list"></ul>
-        </div>
-
-        <!-- Modal -->
-        <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
+        <!-- Product Modal -->
+        <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="modalTitle">Modal title</h5>
+                        <h5 class="modal-title" id="modalTitle">Product Name</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body" id="modalBody">
-                        Modal body text goes here.
+                        <!-- Product details will be injected here by JavaScript -->
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" onclick="addItemToOrder()">Add Item</button>
+                        <button type="button" class="btn btn-primary" onclick="addToCart()">Add to Cart</button>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+
+        <!-- Pay Modal -->
+        <div class="modal fade" id="payModal" tabindex="-1" aria-labelledby="payModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="payModalLabel">Confirm Payment</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="payModalBody">
+                        <!-- Payment details will be injected here by JavaScript -->
+                    </div>
+                    <div class="modal-footer">
+                    <form id="paymentForm" action="generate_receipt.php" method="POST" target="_blank">
+    <input type="hidden" name="orderedItems" id="orderedItemsInput">
+    <input type="hidden" name="paymentMethod" id="paymentMethodInput">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+    <button type="button" class="btn btn-primary" onclick="confirmPayment()">Confirm Payment</button>
+</form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
+

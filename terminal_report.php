@@ -2,7 +2,6 @@
     session_start();
 
     if (isset($_POST['done'])) {
-        $_SESSION['terminal_report_generated'] = true;
         header("Location: dashboard.php");
     }
 ?>
