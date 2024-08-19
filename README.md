@@ -2,6 +2,37 @@
 
 # LANGUAGES USED - PHP(BOOTSTRAP 5.3), AJAX(for realtime update), dbdiag(DB Design)
 
+# User Guide
+
+    - Login
+        Login: Enter your Cashier Code and password on the login screen.
+
+    - User Management
+        Login as an admin using the 'admin' as a cashier code and password.
+
+        Add User: Navigate to the Cashiers section, click Add Add New Cashier,and fill in the required details. 
+
+    - Sales Transactions (For Cashiers)
+
+        Terminal Report: Make sure to print a Terminal report first only if you are the 7am Shift.
+
+        Start a Sale: Press 'Home' at the Sidebar, the menu will automatically show up.
+
+        Payment: Choose the payment method (cash or gcash) and process the payment.
+
+        Print Receipt: After the transaction is complete, print the receipt.
+
+    - Inventory Management
+
+        Add Raw Material: Go to the Inventory section, click Add Raw Material, and input the item details.
+
+        Add New Products: Go to the Products section, fill the details, and click Add Product.
+
+
+
+# Colors: 
+    D2AC67 - Coffee Brown
+
 # Done
 - Login 
 - Logout
@@ -9,30 +40,24 @@
 - cashier dashboard (pos)
 - product adding 
 
+
+
 # Update asap (listed based on prio)
 # hard
-- add_cashiers in admin side
-- make all sidebar functional fore report
+- croppable image to resize 
 - make sql for every ttransac(who it is, when, and what is the transac) may vary depending on dev
-- adjust the size of the paperr
+- hot and iced latte auto change price (no add ons on hot)
 
 # medium
+- order editing
 - add date and time in pos (admin / cashier)
-- product card fix where the name goes down if malaki ang photo
-- croppable image to resize 
-- have a limit on shift timne (8am to 10pm only)
-- modal for payment
-- modal for cofiguring order
-- tables for order literal na table number
-- cups?
+- terminal report time
+
  # easy
  - nothing is easy lol
   
 
 # To be added UI/UX
-- Dashboard layout (Admin) no dash for cashiers
-- tables reports for terminal (modal or inside main content)
-- tabloid form of inventory
 - modal for adding raw materials incl. prod_name prod_code etc.
 - sales (cashier) dashboard
 - ordered list functionality
