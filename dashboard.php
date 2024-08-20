@@ -152,14 +152,19 @@ $stmt->close();
                         <?php
                         if ($_SESSION['cashierCode'] == 'admin') {
                             echo '
-                            <li class="nav-item sidelink">  
-                                <a class="nav-link linkcol main-content-load" href="add_cashier.php">Cashiers</a>
-                            </li>
+
                             <li class="nav-item sidelink">
                                 <a class="nav-link linkcol main-content-load" href="add_products.php">Products</a>
                             </li>
                             <li class="nav-item sidelink">
                                 <a class="nav-link linkcol main-content-load" href="inventory.php">Inventory</a>
+                            </li>
+
+                            <li class="nav-item sidelink">
+                                <a class="nav-link linkcol main-content-load" href="transactions.php">Sales Report</a>
+                            </li>
+                            <li class="nav-item sidelink">
+                                <a class="nav-link linkcol main-content-load" href="add_cashier.php">Cashier Management</a>
                             </li>
                             ';
                         } else {
@@ -171,6 +176,11 @@ $stmt->close();
                             echo '
                             <li class="nav-item sidelink">  
                                 <a class="nav-link linkcol main-content-load ' . $links_disabled . '" id="sidebar-home" href="home.php">Home</a>
+                            </li>
+                                ';
+                            echo '
+                            <li class="nav-item sidelink">  
+                                <a class="nav-link linkcol main-content-load ' . $links_disabled . '" id="sidebar-home" href="#">Transactions</a>
                             </li>
                                 ';
                         }

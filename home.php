@@ -1,8 +1,6 @@
 <?php
 session_start();
 include 'dbcon.php';
-
-// Fetch products from database
 $query = "SELECT * FROM products ORDER BY category_id";
 $result = mysqli_query($conn, $query);
 
@@ -13,12 +11,10 @@ if (mysqli_num_rows($result) > 0) {
     }
 }
 
-// Initialize ordered products session variable if not already set
 if (!isset($_SESSION['ordered_products'])) {
     $_SESSION['ordered_products'] = [];
 }
 
-// Handling form submission (adding product to cart)
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $product = [
         'name' => $_POST['productName'],
@@ -412,11 +408,9 @@ function removeFromCart(button) {
             new bootstrap.Modal(document.getElementById('payModal')).show();
         }
         function confirmPayment() {
-            // Close the Pay Modal
             const payModal = bootstrap.Modal.getInstance(document.getElementById('payModal'));
             payModal.hide();
 
-            // Prepare ordered items array
             const orderedItems = [];
             const orderedList = document.getElementById('orderedList');
             for (let i = 0; i < orderedList.children.length; i++) {
@@ -426,17 +420,13 @@ function removeFromCart(button) {
                 });
             }
 
-            // Prepare payment method
             const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
 
-            // Set hidden inputs in the form
             document.getElementById('orderedItemsInput').value = JSON.stringify(orderedItems);
             document.getElementById('paymentMethodInput').value = paymentMethod;
 
-            // Submit the form to generate receipt
             document.getElementById('paymentForm').submit();
 
-            // Clear the ordered list and update cart count and total price (optional)
             orderedList.innerHTML = '';
             updateCartCount();
         }
@@ -476,7 +466,6 @@ window.onload = function () {
             </div>
         </div>
 
-        <!-- Product Modal -->
         <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
@@ -485,7 +474,6 @@ window.onload = function () {
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body" id="modalBody">
-                        <!-- Product details will be injected here by JavaScript -->
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -495,7 +483,6 @@ window.onload = function () {
             </div>
         </div>
 
-        <!-- Pay Modal -->
         <div class="modal fade" id="payModal" tabindex="-1" aria-labelledby="payModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
@@ -504,7 +491,6 @@ window.onload = function () {
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body" id="payModalBody">
-                        <!-- Payment details will be injected here by JavaScript -->
                     </div>
                     <div class="modal-footer">
                     <form id="paymentForm" action="generate_receipt.php" method="POST" target="_blank">

@@ -23,7 +23,6 @@ class TerminalReport extends FPDF {
 
 $closingCashier = isset($_SESSION['closing_cashier']) && $_SESSION['closing_cashier'];
 
-// Initialize PDF
 $pdf = new TerminalReport('P', 'mm', array(80, 200));  
 $pdf->AddPage();
 
@@ -42,16 +41,15 @@ if (mysqli_num_rows($resultTransactions) > 0) {
         $pdf->Cell(0, 10, 'Total Amount: P' . $row['total_amount'], 0, 1);
         $pdf->Cell(0, 10, 'Payment Method: ' . $row['payment_method'], 0, 1);
         $pdf->Cell(0, 10, 'Transaction Date: ' . $row['transaction_date'], 0, 1);
-        $pdf->Ln(5); // Line break
+        $pdf->Ln(5); 
     }
 } else {
     $pdf->SetFont('Arial', '', 10);
     $pdf->Cell(0, 10, 'No transactions found.', 0, 1);
 }
 
-$pdf->Ln(10); // Line break
+$pdf->Ln(10); 
 
-// Display wastages
 $pdf->SetFont('Arial', 'B', 10);
 $pdf->Cell(0, 10, 'Wastages:', 0, 1);
 
@@ -65,17 +63,15 @@ if (mysqli_num_rows($resultWastages) > 0) {
         $pdf->Cell(0, 10, 'Quantity: ' . $row['quantity'], 0, 1);
         $pdf->Cell(0, 10, 'Stocked Date: ' . $row['stocked_date'], 0, 1);
         $pdf->Cell(0, 10, 'Expiry Date: ' . $row['expiry_date'], 0, 1);
-        $pdf->Ln(5); // Line break
+        $pdf->Ln(5); 
     }
 } else {
     $pdf->SetFont('Arial', '', 10);
     $pdf->Cell(0, 10, 'No wastages found.', 0, 1);
 }
 
-// Output PDF as inline (I) to the browser with filename 'terminal_report.pdf'
 $pdf->Output('I', 'terminal_report.pdf');
 
-// Clear transactions if closing cashier
 if ($closingCashier) {
     $queryDeleteTransactions = "DELETE FROM transactions";
     mysqli_query($conn, $queryDeleteTransactions);

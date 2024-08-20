@@ -86,21 +86,85 @@ $result = $conn->query($query);
     <title>Inventory</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background-color: #F5F4F2; color: black; }
-        .container { background-color: #EEECDA; padding: 20px; border-radius: 10px; margin-top: 50px; }
-        .btn-primary { background-color: #d2a56c; border-color: #d2a56c; }
-        .btn-primary:hover { background-color: #8B4513; border-color: #8B4513; }
-        .center-container { display: flex; justify-content: center; align-items: center; height: 100%; }
-        .table-container { width: 100%; max-width: 800px; }
-        .form-label { color: black; }
-        h2 { font-family: 'Inter', sans-serif; font-weight: 700; }
-        table { margin-top: 20px; width: 100%; border-collapse: collapse; }
-        th { background-color: #d2a56c; color: black; padding: 8px; }
-        td { padding: 8px; border: 1px solid #d2a56c; }
-        .nav-link { color: black; padding: 12px; border-radius: 5px; text-decoration: none; }
-        .nav-link:hover, .nav-link:focus { color: black; background-color: #d2a56c; }
-        .dropdown-menu { background-color: #D2AC67; }
-        .button-container { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        body { 
+            background-color: #F5F4F2; 
+            color: black; 
+        }
+
+        .container { 
+            background-color: #EEECDA; 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin-top: 50px; 
+        }
+
+        .btn-primary { 
+            background-color: #d2a56c; 
+            border-color: #d2a56c;
+        }
+
+        .btn-primary:hover { 
+            background-color: #8B4513; 
+            border-color: #8B4513;
+        }
+
+        .center-container { 
+            display: flex;
+            justify-content: center;
+            align-items: center; 
+            height: 100%; 
+        }
+
+        .table-container { 
+            width: 100%; 
+            max-width: 800px; 
+        }
+        .form-label { 
+            color: black;
+        }
+        h2 { 
+            font-family: 'Inter', sans-serif; 
+            font-weight: 700; 
+        }
+
+        table { 
+            margin-top: 20px; 
+            width: 100%; 
+            border-collapse: collapse; 
+        }
+        
+        th { 
+            background-color: #d2a56c; 
+            color: black; 
+            padding: 8px; 
+        }
+
+        td { 
+            padding: 8px; 
+            border: 1px solid #d2a56c; 
+        }
+
+        .nav-link { 
+            color: black; 
+            padding: 12px; 
+            border-radius: 5px; 
+            text-decoration: none; 
+        }
+        
+        .nav-link:hover, .nav-link:focus { 
+            color: black; 
+            background-color: #d2a56c; 
+        }
+
+        .dropdown-menu { 
+            background-color: #D2AC67; 
+        }
+
+        .button-container { 
+            display: flex; 
+            justify-content: space-between; 
+            margin-bottom: 20px; 
+        }
     </style>
 </head>
 <body>
@@ -147,7 +211,6 @@ $result = $conn->query($query);
         </div>
     </div>
 
-    <!-- Add Raw Material Modal -->
     <div class="modal fade" id="addMaterialModal" tabindex="-1" aria-labelledby="addMaterialModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -187,8 +250,6 @@ $result = $conn->query($query);
             </div>
         </div>
     </div>
-
-    <!-- Wastages Modal -->
     <div class="modal fade" id="wastagesModal" tabindex="-1" aria-labelledby="wastagesModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -208,7 +269,6 @@ $result = $conn->query($query);
                             </tr>
                         </thead>
                         <tbody id="wastagesTableBody">
-                            <!-- Wastages data will be inserted here via AJAX -->
                         </tbody>
                     </table>
                 </div>
@@ -253,7 +313,6 @@ $result = $conn->query($query);
                 });
             });
 
-            // Load wastages data when the wastages modal is shown
             $('#wastagesModal').on('show.bs.modal', function () {
                 $.ajax({
                     url: 'inventory.php',

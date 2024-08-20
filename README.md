@@ -1,6 +1,6 @@
 # DOCUMENTATION GOES HERE 
 
-# LANGUAGES USED - PHP(BOOTSTRAP 5.3), AJAX(for realtime update), dbdiag(DB Design)
+# LANGUAGES USED - PHP(BOOTSTRAP 5.3, 5.2), AJAX(for realtime update),
 
 # User Guide
 
@@ -28,6 +28,8 @@
 
         Add New Products: Go to the Products section, fill the details, and click Add Product.
 
+
+    Note: I have added error handling for better use and user friendliness of the system.
 
 
 # Colors: 

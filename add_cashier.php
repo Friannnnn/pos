@@ -21,10 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
         if ($stmt->execute()) {
             echo "New cashier added successfully";
-        } else {
-            echo "Error: " . $stmt->error;
-        }
-
+        } 
+        
         $stmt->close();
         $conn->close();
     } else {
