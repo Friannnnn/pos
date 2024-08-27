@@ -11,6 +11,9 @@ class TerminalReport extends FPDF {
         $this->SetFont('Arial', 'B', 10);
         $this->Cell(0, 10, 'Terminal Report', 0, 1, 'C');
         
+        $this->SetFont('Arial', 'B', 10);
+        $this->Cell(0, 10, 'Cashier Name: $cashierName', 0, 1, 'C');
+        
         $this->Ln(5);
     }
 

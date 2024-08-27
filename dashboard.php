@@ -180,7 +180,7 @@ $stmt->close();
                                 ';
                             echo '
                             <li class="nav-item sidelink">  
-                                <a class="nav-link linkcol main-content-load ' . $links_disabled . '" id="sidebar-home" href="#">Transactions</a>
+                                <a class="nav-link linkcol main-content-load ' . $links_disabled . '" id="sidebar-home" href="curr_transactions.php">Transactions</a>
                             </li>
                                 ';
                         }

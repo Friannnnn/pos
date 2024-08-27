@@ -12,14 +12,10 @@ foreach ($orderedItems as $item) {
 }
 
 $date = date('Y-m-d H:i:s'); 
-
-// Insert into transactions table
 $query = "INSERT INTO transactions (ordered_items, total_amount, payment_method, transaction_date) 
           VALUES ('" . mysqli_real_escape_string($conn, json_encode($orderedItems)) . "', $subtotal, '$paymentMethod', '$date')";
 mysqli_query($conn, $query);
 
-
-// Insert into admin_transactions table
 $admin_query = "INSERT INTO admin_transactions (ordered_items, total_amount, payment_method, transaction_date, cashier_name) 
                 VALUES ('" . mysqli_real_escape_string($conn, json_encode($orderedItems)) . "', $subtotal, '$paymentMethod', '$date', '$current_cashier' )";
 mysqli_query($conn, $admin_query);

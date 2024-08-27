@@ -71,17 +71,15 @@ if (!isset($_SESSION['cashierName']) || !isset($_SESSION['cashierCode'])) {
         <thead>
             <tr>
                 <th scope="col"></th>
-                <th scope="col">Cashier Name</th>
                 <th scope="col">Payment Method</th>
             </tr>
         </thead>
         <tbody id="cashierTableBody">
             <?php
-            $result = $conn->query("SELECT * FROM admin_transactions");
+            $result = $conn->query("SELECT * FROM transactions");
             while ($row = $result->fetch_assoc()) {
                 echo "<tr data-id='{$row['id']}'>
                         <td>{$row['ordered_items']}</td>
-                        <td>{$row['cashier_name']}</td>
                         <td>{$row['payment_method']}</td>
                     </tr>";
             }
@@ -94,25 +92,5 @@ if (!isset($_SESSION['cashierName']) || !isset($_SESSION['cashierCode'])) {
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    
-
-    $('.btn-delete').click(function() {
-        var row = $(this).closest('tr');
-        var cashierId = row.data('id');
-
-        if (confirm('Are you sure you want to delete this cashier?')) {
-            $.ajax({
-                type: 'POST',
-                url: 'add_cashier.php',
-                data: { action: 'delete', cashierId: cashierId },
-                success: function(response) {
-                    alert(response);
-                    location.reload();
-                }
-            });
-        }
-    });
-</script>
 </body>
 </html>
