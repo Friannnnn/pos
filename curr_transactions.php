@@ -72,6 +72,8 @@ if (!isset($_SESSION['cashierName']) || !isset($_SESSION['cashierCode'])) {
             <tr>
                 <th scope="col"></th>
                 <th scope="col">Payment Method</th>
+                <th scope="col">Date</th>
+                
             </tr>
         </thead>
         <tbody id="cashierTableBody">
@@ -81,6 +83,7 @@ if (!isset($_SESSION['cashierName']) || !isset($_SESSION['cashierCode'])) {
                 echo "<tr data-id='{$row['id']}'>
                         <td>{$row['ordered_items']}</td>
                         <td>{$row['payment_method']}</td>
+                        <td>{$row['transaction_date']}</td>
                     </tr>";
             }
             $conn->close();

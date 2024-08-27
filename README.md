@@ -31,6 +31,11 @@
 
     Note: I have added error handling for better use and user friendliness of the system.
 
+#  Features to be added:
+    - Logo & Icons
+    - Cashier Name on receipts
+    - Collapsible dashboard 
+    - Main content extension(width)
 
 # Colors: 
     D2AC67 - Coffee Brown

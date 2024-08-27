@@ -337,12 +337,8 @@ $result = $conn->query($query);
                         } else {
                             wastagesTableBody.append('<tr><td colspan="5">No wastages found</td></tr>');
                         }
-                    },
-                    error: function(xhr, status, error) {
-                        let wastagesTableBody = $('#wastagesTableBody');
-                        wastagesTableBody.empty();
-                        wastagesTableBody.append('<tr><td colspan="5">An error occurred while fetching wastages data</td></tr>');
                     }
+                    
                 });
             });
         });
